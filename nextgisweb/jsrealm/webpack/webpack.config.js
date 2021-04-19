@@ -15,8 +15,8 @@ const packageJson = JSON.parse(fs.readFileSync(`${configRoot}/package.json`));
 
 for (const ws of packageJson.workspaces) {
     const subPackageJSON = JSON.parse(fs.readFileSync(`${configRoot}/${ws}/package.json`));
-    if ('entry' in subPackageJSON) {
-        for (const entryFileName of subPackageJSON.entry) {
+    if ('nextgisweb' in subPackageJSON && 'entrypoints' in subPackageJSON['nextgisweb']) {
+        for (const entryFileName of subPackageJSON.nextgisweb.entrypoints) {
             let entryName = entryFileName;
             if (entryFileName.endsWith('.js')) {
                 entryName = entryFileName.slice(0, -3);
