@@ -46,10 +46,11 @@ def test(request):
 
 def _preprocessed_filename(dist_path, file_dir, file_name):
     preproc_name = 'preproc-' + file_name
+    relname = os.path.join(file_dir, file_name)
     fullname = os.path.join(dist_path, file_dir, file_name)
     preproc = os.path.join(dist_path, file_dir, preproc_name)
 
-    if not fullname.endswith(('.js', '.vue')):
+    if not relname.endswith(('.js', '.vue')) or relname.startswith('chunk/'):
         if os.path.exists(fullname):
             return fullname
         else:
@@ -90,7 +91,7 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
                     len(m.group(0)):])
             else:
                 tmp.write(line)
-            copyfileobj(src, tmp)
+            copyfileobj(src, tmp, 64 * 1024)
 
         # TODO: Cleanup temporary file when rename fails
         os.rename(tmp.name, preproc)

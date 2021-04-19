@@ -92,7 +92,11 @@ module.exports = {
         new VueLoaderPlugin()
     ],
     output: {
-        filename: '[name].js',
+        filename: (pathData) => (
+            pathData.chunk.name !== undefined ?
+            '[name].js' : 'chunk/[name].js'
+        ),
+        chunkFilename: 'chunk/[id].js',
         libraryTarget: 'amd',
         path: path.resolve(configRoot, 'dist')
     },
