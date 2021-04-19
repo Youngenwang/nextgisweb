@@ -5,10 +5,15 @@
     "entry": [
         "test-dijit.js",
         "test-lodash.js",
-        "test-mixed.js"
+        "test-mixed.js",
+        "test-polyfill.js"
     ],
     "dependencies": {
+        "@babel/core": "^7.12.10",
+        "@babel/preset-env": "^7.12.11",
+        "babel-loader": "^8.2.2",
         "clean-webpack-plugin": "^3.0.0",
+        "core-js": "3",
         "css-loader": "^5.0.1",
         "style-loader": "^2.0.0",
         "webpack": "^5.12.3",

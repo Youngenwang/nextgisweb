@@ -3,6 +3,7 @@
 <button id="testDijit">Test dijit</button>
 <button id="testLodash">Test lodash</button>
 <button id="testMixed">Test mixed</button>
+<button id="testPolyfill">Test polyfill</button>
 
 <script>
     require(["dojo/domReady!"], function () {
@@ -18,6 +19,11 @@
         };
         document.getElementById("testMixed").onclick = function () {
             require(['@nextgisweb/webpack/test-mixed'], function (module) {
+                module.test();
+            })
+        };
+        document.getElementById("testPolyfill").onclick = function () {
+            require(['@nextgisweb/webpack/test-polyfill'], function (module) {
                 module.test();
             })
         };

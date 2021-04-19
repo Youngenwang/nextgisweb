@@ -31,6 +31,29 @@ module.exports = {
     module: { 
         rules: [
             {
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        presets: [[
+                            "@babel/preset-env", {
+                                // debug: true,
+                                corejs: { "version": 3 },
+                                useBuiltIns: "usage",
+                                targets: { 
+                                    "firefox": "68",
+                                    "chrome": "79",
+                                    "edge": "80",
+                                    "safari": "13",
+                                    "ie": "11"
+                                }
+                            }
+                        ]]
+                    }
+                }
+            },
+            {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"]
             }
