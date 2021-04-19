@@ -50,7 +50,11 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
     fullname = os.path.join(dist_path, file_dir, file_name)
     preproc = os.path.join(dist_path, file_dir, preproc_name)
 
-    if not relname.endswith(('.js', '.vue')) or relname.startswith('chunk/'):
+    if not (
+        relname.endswith(('.js', '.vue'))
+        and relname.startswith('main/')
+        and not relname.startswith('main/chunk')
+    ):
         if os.path.exists(fullname):
             return fullname
         else:
@@ -74,11 +78,12 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
     manifest = _load_manifest(dist_path)
 
     try:
-        chunks = manifest['entrypoints'][entry_name]['assets']['js']
+        chunks = manifest['entrypoints'][entry_name[len('main/'):]]['assets']['js']
     except KeyError:
         chunks = []
 
-    _logger.debug("Creating preprocessed copy of [{}/{}]".format(file_dir, file_name))
+    _logger.debug("Creating preprocessed copy of [{}/{}] with chunks [{}]".format(
+        file_dir, file_name, ', '.join(chunks)))
     with NamedTemporaryFile(dir=dist_path, delete=False) as tmp:
         with open(fullname, 'r') as src:
             line = src.read(512)
@@ -86,7 +91,7 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
             if m is not None:
                 existing = m.group(1)
                 deps = json.loads(existing) if existing else []
-                deps.extend([('dist/' + c[:-3]) for c in chunks[:-1]])
+                deps.extend([('dist/main/' + c[:-3]) for c in chunks[:-1]])
                 tmp.write("define({}, (".format(json.dumps(deps)) + line[
                     len(m.group(0)):])
             else:
@@ -102,7 +107,7 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
 
 def _load_manifest(dist_path):
     # TODO: Add manifest file caching
-    manifest_path = os.path.join(dist_path, 'assets-manifest.json')
+    manifest_path = os.path.join(dist_path, 'main/assets-manifest.json')
     with io.open(manifest_path, 'r') as fd:
         manifest = json.load(fd)
         return manifest

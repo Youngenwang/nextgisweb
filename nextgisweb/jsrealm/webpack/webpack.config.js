@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 const WebpackAssetsManifest = require('webpack-assets-manifest');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
@@ -29,7 +30,73 @@ for (const ws of packageJson.workspaces) {
     }
 }
 
-module.exports = {
+const stylesheetRoot = path.resolve(__dirname, '../../static');
+
+configStylesheet = {
+    mode: 'development',
+    devtool: 'source-map',
+    entry: {
+        'layout': stylesheetRoot + '/css/layout.less',
+        'default': stylesheetRoot + '/css/default.css',
+        'pure': stylesheetRoot + '/css/pure-0.6.0-min.css'
+    },
+    output: {
+        path: path.resolve(configRoot, 'dist/stylesheet')
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new MiniCssExtractPlugin()
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.less$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: { publicPath: './' }
+                    },
+                    "css-loader",
+                    {
+                        loader: 'less-loader',
+                        options: {
+                            lessOptions: {
+                                rootpath: stylesheetRoot + '/css',
+                                javascriptEnabled: true,
+                            }
+                        }
+                    }
+                ]       
+            },
+            {
+                test: /\.css$/,
+                use: [MiniCssExtractPlugin.loader, "css-loader"]
+            },
+            {
+                test: (fp) => fp.startsWith(stylesheetRoot + '/font/'),
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: { outputPath: 'font', name: '[name].[ext]' }
+                    }
+                ]
+            },
+            {
+                test: (fp) => fp.startsWith(stylesheetRoot + '/svg/'),
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: { outputPath: 'svg', name: '[name].[ext]' }
+                    }
+                ]
+            }
+
+        ]
+    }
+}
+
+
+const configMain = {
     mode: 'development',
     devtool: 'source-map',
     entry: entryList,
@@ -98,7 +165,7 @@ module.exports = {
         ),
         chunkFilename: 'chunk/[id].js',
         libraryTarget: 'amd',
-        path: path.resolve(configRoot, 'dist')
+        path: path.resolve(configRoot, 'dist/main')
     },
     externals: [
         function({context, request}, callback) {
@@ -117,3 +184,5 @@ module.exports = {
         },
     },    
 }
+
+module.exports = [configMain, configStylesheet]
