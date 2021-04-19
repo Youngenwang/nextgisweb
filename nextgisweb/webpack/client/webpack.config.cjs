@@ -4,6 +4,8 @@ const fs = require('fs');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 
+const { VueLoaderPlugin } = require('vue-loader');
+
 const entryList = {};
 
 const configRoot = process.env.npm_package_config_nextgisweb_webpack_root;
@@ -42,7 +44,7 @@ module.exports = {
                         presets: [
                             ["@babel/preset-typescript", {}],
                             ["@babel/preset-env", {
-                                //debug: true,
+                                // debug: true,
                                 corejs: { "version": 3 },
                                 useBuiltIns: "usage",
                                 targets: { 
@@ -58,14 +60,23 @@ module.exports = {
                 }
             },
             {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            },
+            {
                 test: /\.css$/i,
-                use: ["style-loader", "css-loader"]
+                use: [
+                    // Do we need vue-style-loader here instead of style-loader?
+                    "style-loader",
+                    "css-loader"
+                ]
             }
         ]
     },
     plugins: [
         new WebpackAssetsManifest({ entrypoints: true }),
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        new VueLoaderPlugin()
     ],
     output: {
         filename: '[name].js',

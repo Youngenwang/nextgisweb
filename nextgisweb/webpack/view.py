@@ -19,6 +19,8 @@ def setup_pyramid(comp, config):
 
     config.add_route('webpack.test', '/test/webpack') \
         .add_view(test, renderer="nextgisweb:webpack/template/test.mako")
+    config.add_route('webpack.vue', '/test/vue') \
+        .add_view(test, renderer="nextgisweb:webpack/template/vue.mako")
 
 
 def dist(request):
