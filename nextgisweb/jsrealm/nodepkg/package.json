@@ -9,6 +9,7 @@
         "test-mixed.js",
         "test-polyfill.js",
         "test-typescript.ts",
+        "test-translation.js",
         "test-vue.js"
     ],
     "dependencies": {

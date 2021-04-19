@@ -1,10 +1,11 @@
 <%inherit file='nextgisweb:templates/base.mako' />
 
-<button id="testDijit">Test dijit</button>
-<button id="testLodash">Test lodash</button>
-<button id="testMixed">Test mixed</button>
-<button id="testPolyfill">Test polyfill</button>
-<button id="testTypescript">Test typescript</button>
+<button id="testDijit">Dijit</button>
+<button id="testLodash">Lodash</button>
+<button id="testMixed">Mixed</button>
+<button id="testPolyfill">Polyfill</button>
+<button id="testTypescript">Typescript</button>
+<button id="testTranslation">Translation</button>
 
 <script>
     require(["dojo/domReady!"], function () {
@@ -30,6 +31,11 @@
         };
         document.getElementById("testTypescript").onclick = function () {
             require(['@nextgisweb/jsrealm/test-typescript'], function (module) {
+                module.test();
+            })
+        };
+        document.getElementById("testTranslation").onclick = function () {
+            require(['@nextgisweb/jsrealm/test-translation'], function (module) {
                 module.test();
             })
         };
