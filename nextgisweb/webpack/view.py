@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, absolute_import, print_function, unicode_literals
 import io
+import re
 import os
 import json
+import logging
 import os.path
-import re
-from shutil import copyfileobj
+from shutil import copyfileobj, copystat
 from tempfile import NamedTemporaryFile
 
 from pyramid.response import FileResponse
 from pyramid.httpexceptions import HTTPNotFound
+
+_logger = logging.getLogger(__name__)
 
 
 def setup_pyramid(comp, config):
@@ -42,8 +45,9 @@ def test(request):
 
 
 def _preprocessed_filename(dist_path, file_dir, file_name):
+    preproc_name = 'preproc-' + file_name
     fullname = os.path.join(dist_path, file_dir, file_name)
-    preproc = os.path.join(dist_path, file_dir, 'preproc-' + file_name)
+    preproc = os.path.join(dist_path, file_dir, preproc_name)
 
     if not fullname.endswith('.js'):
         if os.path.exists(fullname):
@@ -52,7 +56,12 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
             return None
 
     if os.path.exists(preproc):
-        return preproc
+        stat_fullname = os.stat(fullname)
+        stat_preproc = os.stat(preproc)
+        if abs(stat_preproc.st_mtime - stat_fullname.st_mtime) < 1e-3:
+            return preproc
+        else:
+            _logger.debug("File [{}/{}] is changed! Recreating...".format(file_dir, file_name))
 
     if not os.path.exists(fullname):
         return None
@@ -66,12 +75,9 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
     try:
         chunks = manifest['entrypoints'][entry_name]['assets']['js']
     except KeyError:
-        chunks = None
+        chunks = []
 
-    if chunks is None or len(chunks) <= 1:
-        os.symlink(fullname.split('/')[-1], preproc)
-        return preproc
-
+    _logger.debug("Creating preprocessed copy of [{}/{}]".format(file_dir, file_name))
     with NamedTemporaryFile(dir=dist_path, delete=False) as tmp:
         with open(fullname, 'r') as src:
             line = src.read(512)
@@ -82,11 +88,15 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
                 deps.extend([('dist/' + c[:-3]) for c in chunks[:-1]])
                 tmp.write("define({}, (".format(json.dumps(deps)) + line[
                     len(m.group(0)):])
+            else:
+                tmp.write(line)
             copyfileobj(src, tmp)
 
         # TODO: Cleanup temporary file when rename fails
         os.rename(tmp.name, preproc)
-        return preproc
+
+    copystat(fullname, preproc)
+    return preproc
 
 
 def _load_manifest(dist_path):
