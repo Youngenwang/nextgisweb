@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-from ..component import Component, require
+from ..component import Component
 from ..lib.config import Option
 
 from .util import COMP_ID
 from . import command  # NOQA
 
 
-class WebpackComponent(Component):
+class JSRealmComponent(Component):
     identity = COMP_ID
 
     def setup_pyramid(self, config):

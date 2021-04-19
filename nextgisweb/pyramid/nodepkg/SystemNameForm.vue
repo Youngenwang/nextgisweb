@@ -13,7 +13,7 @@
 <script>
     import { ref } from "vue";
     import { Form, Input, Button } from "ant-design-vue";
-    import { appHelper } from "@nextgisweb/webpack/vue.js";
+    import { appHelper } from "@nextgisweb/jsrealm/vue.js";
     import route from "ngw/route";
 
     const API_URL = route.pyramid.system_name();

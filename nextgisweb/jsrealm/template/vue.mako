@@ -5,7 +5,7 @@
 <div id="datePicker"></div>
 
 <script>
-    require(["@nextgisweb/webpack/test-vue"], function (module) {
+    require(["@nextgisweb/jsrealm/test-vue"], function (module) {
         module.test("#el");
         module.antd("#datePicker");
     })

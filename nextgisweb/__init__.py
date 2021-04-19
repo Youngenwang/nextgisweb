@@ -14,7 +14,7 @@ def pkginfo():
         'core',
         'sentry',
         'pyramid',
-        'webpack',
+        'jsrealm',
         'auth',
         'resource',
         'resmeta',

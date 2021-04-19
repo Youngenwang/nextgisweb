@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, absolute_import, print_function, unicode_literals
 import json
+import logging
 from collections import OrderedDict
 from importlib import import_module
 from subprocess import check_call
@@ -9,10 +10,12 @@ from ..compat import Path
 from ..command import Command
 from ..package import amd_packages
 
+_logger = logging.getLogger(__name__)
+
 
 @Command.registry.register
-class WebpackCommand(object):
-    identity = 'webpack'
+class JSRealmWSRootCommand(object):
+    identity = 'jsrealm.wsroot'
     no_initialize = True
 
     @classmethod
@@ -26,21 +29,21 @@ class WebpackCommand(object):
         for cid, cobj in env._components.items():
             cmod = import_module(cobj.__class__.__module__)
             cpath = Path(cmod.__file__).parent.resolve()
-            jspkg = cpath / 'client'
+            jspkg = cpath / 'nodepkg'
             if jspkg.exists():
-                client_packages.append(str(jspkg.relative_to(cwd)))
-                if cid == 'webpack':
-                    webpack_package = str(jspkg.relative_to(cwd))
+                jspkg_rel = str(jspkg.relative_to(cwd))
+                _logger.debug("Node package is found in [{}]".format(jspkg_rel))
+                client_packages.append(str(jspkg_rel))
 
         package_json = OrderedDict(private=True)
         package_json['config'] = config = OrderedDict()
-        config['nextgisweb_webpack_root'] = str(Path().resolve())
-        config['nextgisweb_webpack_packages'] = ','.join(client_packages)
-        config['nextgisweb_webpack_external'] = ','.join([
+        config['nextgisweb_jsrealm_root'] = str(Path().resolve())
+        config['nextgisweb_jsrealm_packages'] = ','.join(client_packages)
+        config['nextgisweb_jsrealm_external'] = ','.join([
             pname for pname, _ in amd_packages()])
 
         package_json['scripts'] = scripts = OrderedDict()
-        webpack_config = '{}/webpack.config.cjs'.format(webpack_package)
+        webpack_config = Path(__file__).parent / 'webpack' / 'webpack.config.js'
         scripts['build'] = 'webpack --config {}'.format(webpack_config)
         scripts['watch'] = 'webpack --watch --config {}'.format(webpack_config)
 

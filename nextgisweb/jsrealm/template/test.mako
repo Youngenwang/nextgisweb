@@ -9,27 +9,27 @@
 <script>
     require(["dojo/domReady!"], function () {
         document.getElementById("testDijit").onclick = function () {
-            require(['@nextgisweb/webpack/test-dijit'], function (module) {
+            require(['@nextgisweb/jsrealm/test-dijit'], function (module) {
                 module.test();
             })
         };
         document.getElementById("testLodash").onclick = function () {
-            require(['@nextgisweb/webpack/test-lodash'], function (module) {
+            require(['@nextgisweb/jsrealm/test-lodash'], function (module) {
                 module.test();
             })
         };
         document.getElementById("testMixed").onclick = function () {
-            require(['@nextgisweb/webpack/test-mixed'], function (module) {
+            require(['@nextgisweb/jsrealm/test-mixed'], function (module) {
                 module.test();
             })
         };
         document.getElementById("testPolyfill").onclick = function () {
-            require(['@nextgisweb/webpack/test-polyfill'], function (module) {
+            require(['@nextgisweb/jsrealm/test-polyfill'], function (module) {
                 module.test();
             })
         };
         document.getElementById("testTypescript").onclick = function () {
-            require(['@nextgisweb/webpack/test-typescript'], function (module) {
+            require(['@nextgisweb/jsrealm/test-typescript'], function (module) {
                 module.test();
             })
         };

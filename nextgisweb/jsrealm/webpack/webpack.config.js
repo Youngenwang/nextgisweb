@@ -8,8 +8,8 @@ const { VueLoaderPlugin } = require('vue-loader');
 
 const entryList = {};
 
-const configRoot = process.env.npm_package_config_nextgisweb_webpack_root;
-const configExternals = process.env.npm_package_config_nextgisweb_webpack_external.split(',');
+const configRoot = process.env.npm_package_config_nextgisweb_jsrealm_root;
+const configExternals = process.env.npm_package_config_nextgisweb_jsrealm_external.split(',');
 const packageJson = JSON.parse(fs.readFileSync(`${configRoot}/package.json`));
 
 for (const ws of packageJson.workspaces) {

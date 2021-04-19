@@ -17,17 +17,17 @@ _logger = logging.getLogger(__name__)
 
 def setup_pyramid(comp, config):
     comp.dist_path = comp.options['dist_path']
-    webpack_dist = '/static{}/dist/*subpath'.format(comp.env.pyramid.static_key)
-    config.add_route('webpack.dist', webpack_dist).add_view(dist)
+    jsrealm_dist = '/static{}/dist/*subpath'.format(comp.env.pyramid.static_key)
+    config.add_route('jsrealm.dist', jsrealm_dist).add_view(dist)
 
-    config.add_route('webpack.test', '/test/webpack') \
-        .add_view(test, renderer="nextgisweb:webpack/template/test.mako")
-    config.add_route('webpack.vue', '/test/vue') \
-        .add_view(test, renderer="nextgisweb:webpack/template/vue.mako")
+    config.add_route('jsrealm.test', '/test/jsrealm') \
+        .add_view(test, renderer="nextgisweb:jsrealm/template/test.mako")
+    config.add_route('jsrealm.vue', '/test/vue') \
+        .add_view(test, renderer="nextgisweb:jsrealm/template/vue.mako")
 
 
 def dist(request):
-    dist_path = request.env.webpack.options['dist_path']
+    dist_path = request.env.jsrealm.options['dist_path']
     subpath = request.matchdict['subpath']
 
     preproc = _preprocessed_filename(
