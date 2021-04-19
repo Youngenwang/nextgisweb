@@ -1,0 +1,11 @@
+{
+    "name": "@nextgisweb/file-upload",
+    "version": "0.0.0",
+    "type": "module",
+    "entry": [
+        "tus-client.js"
+    ],
+    "dependencies": {
+        "tus-js-client": "~2.2.0"
+    }
+}
