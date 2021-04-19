@@ -1,9 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 
 const entryList = {};
@@ -33,6 +33,11 @@ module.exports = {
     mode: 'development',
     devtool: 'source-map',
     entry: entryList,
+    resolve: {
+        alias: {
+            "vue$": "vue/dist/vue.runtime.esm-bundler.js"
+        }
+    },
     module: { 
         rules: [
             {
@@ -54,6 +59,14 @@ module.exports = {
                                     "safari": "13",
                                     "ie": "11"
                                 }
+                            }]
+                        ],
+                        plugins: [
+                            // Automatically import component JS module and its CSS stylesheet.
+                            ["import", {
+                                "libraryName": "ant-design-vue",
+                                "customName": (name) => `ant-design-vue/es/${name}/index.js`,
+                                "style": (name) => `${name}/../style/index.css`
                             }]
                         ]
                     }

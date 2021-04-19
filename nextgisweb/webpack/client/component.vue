@@ -6,7 +6,7 @@
 export default {
   data () {
     return {
-      msg: "Hello world from Vue!"
+      msg: "Hello world from component.vue!"
     }
   }
 }
