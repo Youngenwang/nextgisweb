@@ -9,6 +9,7 @@ from shutil import copyfileobj
 from tempfile import NamedTemporaryFile
 
 from pyramid.response import FileResponse
+from pyramid.httpexceptions import HTTPNotFound
 
 
 def setup_pyramid(comp, config):
@@ -27,6 +28,10 @@ def dist(request):
     preproc = _preprocessed_filename(
         dist_path, '/'.join(subpath[:-1]),
         subpath[-1])
+
+    if preproc is None:
+        raise HTTPNotFound()
+
     return FileResponse(preproc, cache_max_age=3600, request=request)
 
 
@@ -39,7 +44,10 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
     preproc = os.path.join(dist_path, file_dir, 'preproc-' + file_name)
 
     if not fullname.endswith('.js'):
-        return fullname
+        if os.path.exists(fullname):
+            return fullname
+        else:
+            return None
 
     if os.path.exists(preproc):
         return preproc
