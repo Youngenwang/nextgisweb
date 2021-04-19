@@ -18,6 +18,9 @@ for (const ws of packageJson.workspaces) {
             if (entryFileName.endsWith('.js')) {
                 entryName = entryFileName.slice(0, -3);
             }
+            if (entryFileName.endsWith('.ts')) {
+                entryName = entryFileName.slice(0, -3);
+            }
             const entryFullPath = `${configRoot}/${ws}/${entryFileName}`;
             entryList[`${subPackageJSON.name}/${entryName}`] = entryFullPath;
         }
@@ -31,14 +34,15 @@ module.exports = {
     module: { 
         rules: [
             {
-                test: /\.m?js$/,
+                test: /\.(m?js|ts?)$/,
                 exclude: /node_modules/,
                 use: {
                     loader: "babel-loader",
                     options: {
-                        presets: [[
-                            "@babel/preset-env", {
-                                // debug: true,
+                        presets: [
+                            ["@babel/preset-typescript", {}],
+                            ["@babel/preset-env", {
+                                //debug: true,
                                 corejs: { "version": 3 },
                                 useBuiltIns: "usage",
                                 targets: { 
@@ -48,8 +52,8 @@ module.exports = {
                                     "safari": "13",
                                     "ie": "11"
                                 }
-                            }
-                        ]]
+                            }]
+                        ]
                     }
                 }
             },
