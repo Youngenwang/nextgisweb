@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "type": "module",
     "entry": [
+        "vue.js",
         "test-dijit.js",
         "test-lodash.js",
         "test-mixed.js",

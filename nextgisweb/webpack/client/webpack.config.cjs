@@ -35,7 +35,7 @@ module.exports = {
     entry: entryList,
     resolve: {
         alias: {
-            "vue$": "vue/dist/vue.runtime.esm-bundler.js"
+            "vue$": "vue/dist/vue.esm-bundler.js"
         }
     },
     module: { 

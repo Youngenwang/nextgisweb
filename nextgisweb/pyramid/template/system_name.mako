@@ -4,12 +4,10 @@
     <% import json %>
     <script type="text/javascript">
         require([
-            "ngw-pyramid/SystemNameForm",
+            "@nextgisweb/pyramid/SystemNameForm.vue",
             "dojo/domReady!"
-        ], function (
-            SystemNameForm
-        ) {
-            (new SystemNameForm()).placeAt('form').startup();
+        ], function (Form) {
+            Form.default.app().mount('#form');
         });
     </script>
 </%def>

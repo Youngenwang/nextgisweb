@@ -49,7 +49,7 @@ def _preprocessed_filename(dist_path, file_dir, file_name):
     fullname = os.path.join(dist_path, file_dir, file_name)
     preproc = os.path.join(dist_path, file_dir, preproc_name)
 
-    if not fullname.endswith('.js'):
+    if not fullname.endswith(('.js', '.vue')):
         if os.path.exists(fullname):
             return fullname
         else:
