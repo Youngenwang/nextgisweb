@@ -86,11 +86,12 @@ class AuthComponent(Component):
 
             # Set user last activity
             delta = self.options['activity_delta']
-            if user.last_activity is None or (datetime.utcnow() - user.last_activity) > delta:
+            last_activity = user.last_activity
+            if last_activity is None or (datetime.utcnow() - last_activity) > delta:
                 def update_last_activity(request):
                     with transaction.manager:
                         DBSession.query(User).filter_by(
-                            principal_id=user.id, last_activity=user.last_activity
+                            principal_id=user_id, last_activity=last_activity
                         ).update(dict(last_activity=datetime.utcnow()))
                 request.add_finished_callback(update_last_activity)
 
