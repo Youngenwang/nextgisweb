@@ -445,3 +445,18 @@ def setup_pyramid(comp, config):
                      '/api/component/pyramid/home_path') \
         .add_view(home_path_get, request_method='GET', renderer='json') \
         .add_view(home_path_put, request_method='PUT', renderer='json')
+
+    def fail(request):
+        # Touch user to update last activity
+        request.user
+
+        # This way fails bad
+        res = Resource.filter_by(id=0).one()
+        DBSession.delete(res)
+
+        # This way fails good
+        # Resource.filter_by(id=0).delete()
+
+        return Response()
+
+    config.add_route('test.fail', '/api/test/fail').add_view(fail)
