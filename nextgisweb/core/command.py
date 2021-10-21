@@ -146,9 +146,9 @@ class BackupCommand(Command):
     @classmethod
     def execute(cls, args, env):
         target = args.target
-        autoname = datetime.today().strftime(env.core.options['backup.filename'])
         if target is None:
             if env.core.options['backup.path']:
+                autoname = datetime.today().strftime(env.core.options['backup.filename'])
                 target = pthjoin(env.core.options['backup.path'], autoname)
             else:
                 target = NamedTemporaryFile(delete=False).name
@@ -157,13 +157,16 @@ class BackupCommand(Command):
 
         to_stdout = target == '-'
 
+        tmp_root = env.core.options.get('backup.tempdir', None if to_stdout
+                                        else os.path.split(target)[0])
+
         if not to_stdout and os.path.exists(target):
             raise RuntimeError("Target already exists!")
 
         if args.nozip:
             @contextmanager
             def tgt_context():
-                tmpdir = mkdtemp(dir=os.path.split(target)[0])
+                tmpdir = mkdtemp(dir=tmp_root)
                 try:
                     yield tmpdir
                     logger.debug("Renaming [%s] to [%s]...", tmpdir, target)
@@ -175,13 +178,12 @@ class BackupCommand(Command):
         elif to_stdout:
             @contextmanager
             def tgt_context():
-                with TemporaryDirectory() as tmp_dir:
+                with TemporaryDirectory(dir=tmp_root) as tmp_dir:
                     yield tmp_dir
                     cls.compress(tmp_dir, sys.stdout.buffer)
         else:
             @contextmanager
             def tgt_context():
-                tmp_root = os.path.split(target)[0]
                 with TemporaryDirectory(dir=tmp_root) as tmp_dir:
                     yield tmp_dir
                     tmp_arch = mkstemp(dir=tmp_root)[1]
@@ -208,9 +210,9 @@ class BackupCommand(Command):
             for root, dirs, files in os.walk(src):
                 zipf.write(root, os.path.relpath(root, src))
                 for fn in files:
-                    filename = os.path.join(root, fn)
+                    filename = pthjoin(root, fn)
                     if os.path.isfile(filename):
-                        arcname = os.path.join(os.path.relpath(root, src), fn)
+                        arcname = pthjoin(os.path.relpath(root, src), fn)
                         zipf.write(filename, arcname)
 
 
@@ -231,13 +233,14 @@ class RestoreCommand(Command):
         if from_stdin:
             @contextmanager
             def src_context():
-                with TemporaryDirectory() as tmpdir:
+                tmp_root = env.core.options.get('backup.tmproot', None)
+                with TemporaryDirectory(dir=tmp_root) as tmpdir:
                     cls.decompress(sys.stdin.buffer, tmpdir)
                     yield tmpdir
         elif is_zipfile(source):
             @contextmanager
             def src_context():
-                tmp_root = os.path.split(source)[0]
+                tmp_root = env.core.options.get('backup.tmproot', os.path.split(source)[0])
                 with TemporaryDirectory(dir=tmp_root) as tmpdir:
                     cls.decompress(source, tmpdir)
                     yield tmpdir
