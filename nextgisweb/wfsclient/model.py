@@ -191,7 +191,7 @@ class WFSConnection(Base, Resource):
 
         return fields
 
-    def get_feature(self, layer, fid=None, intersects=None, get_count=False,
+    def get_feature(self, layer, fid=None, intersects=None, propertyname=None, get_count=False,
                     limit=None, offset=None, srs=None, add_box=False):
         req_root = etree.Element('GetFeature')
 
@@ -228,6 +228,12 @@ class WFSConnection(Base, Resource):
         if len(__filter) > 0:
             __query.append(__filter)
         # } Filter
+
+        if propertyname is not None:
+            for p in propertyname:
+                __p = etree.Element('PropertyName')
+                __p.text = p
+                __query.append(__p)
 
         if get_count:
             req_root.attrib['resultType'] = 'hits'
@@ -500,6 +506,14 @@ class FeatureQueryBase(object):
             params['add_box'] = True
         if self._intersects:
             params['intersects'] = self._intersects
+
+        if not self._geom and self._fields is not None:
+            params['propertyname'] = self._fields
+        elif not self._geom:
+            params['propertyname'] = [f.keyname for f in self.layer.fields]
+        elif self._fields is not None:
+            params['propertyname'] = self._fields
+            params['propertyname'].append(self.layer.column_geom)
 
         features, count = self.layer.connection.get_feature(
             self.layer, **params)
