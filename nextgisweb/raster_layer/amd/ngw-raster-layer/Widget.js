@@ -29,6 +29,11 @@ define([
             this.wSrs = SRSSelect({allSrs: null});
         },
 
+        serialize: function(data, lunkwill) {
+            this.inherited(arguments);
+            lunkwill.suggest(this.composite.operation == "create");
+        },
+
         serializeInMixin: function (data) {
             if (data.raster_layer === undefined) { data.raster_layer = {}; }
             var value = data.raster_layer;
